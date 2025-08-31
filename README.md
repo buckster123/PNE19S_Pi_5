@@ -193,7 +193,7 @@ for tool_call in tool_calls:
 - **Performance**: <150MB RAM; streams <1s latency on Pi 5.
 
 ### Installation
-1. Clone: `git clone https://github.com/your-repo-here`.
+1. Clone: `git clone [https://github.com/your-repo-here](https://github.com/buckster123/PNE19S_Pi_5/tree/main`.
 2. Venv: `python -m venv env; source env/bin/activate`.
 3. Deps: `pip install streamlit openai passlib python-dotenv ntplib`.
 4. .env: `XAI_API_KEY=your_key`.
