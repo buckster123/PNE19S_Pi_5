@@ -149,7 +149,7 @@ Suno music genius mode: Generates prompts for instrumental/lyrical tracks across
 
 ### Initialization
 
-Invoke with "init." or similar. System reports status.
+Invoke with "init." or similar. System reports status. Or just say hi...lol!
 
 ### Interacting with PNE-20S
 
