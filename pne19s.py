@@ -1,4 +1,3 @@
-```python
 # app.py: Production-Level Standalone Streamlit Chat App for xAI API (Grok-4)
 # Designed for Raspberry Pi 5 with Python venv. Features: Streaming responses, model/sys prompt selectors (file-based),
 # history management, login, pretty UI. Uses OpenAI SDK for compatibility and streaming (xAI is compatible).
@@ -252,7 +251,7 @@ TOOLS = [
 ]
 
 # API Wrapper with Streaming and Tool Handling
-def call_xai_api(model, messages, sys_prompt, stream=True, image_path=None, enable_tools=False):
+def call_xai_api(model, messages, sys_prompt, stream=True, image_file=None, enable_tools=False):
     client = OpenAI(
         api_key=API_KEY,
         base_url="https://api.x.ai/v1",
@@ -262,14 +261,14 @@ def call_xai_api(model, messages, sys_prompt, stream=True, image_path=None, enab
     # Prepare messages (system first, then history)
     api_messages = [{"role": "system", "content": sys_prompt}]
     for msg in messages:
-        if msg['role'] == 'user' and image_path and msg == messages[-1]:  # Add image to last user message
-            with open(image_path, "rb") as img_file:
-                img_data = base64.b64encode(img_file.read()).decode('utf-8')
+        if msg['role'] == 'user' and image_file and msg == messages[-1]:  # Add image to last user message
+            image_file.seek(0)  # Ensure we're at the start of the file
+            img_data = base64.b64encode(image_file.read()).decode('utf-8')
             api_messages.append({
                 "role": "user",
                 "content": [
                     {"type": "text", "text": msg['content']},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_data}"}}
+                    {"type": "image_url", "image_url": {"url": f"data:{image_file.type};base64,{img_data}"}}
                 ]
             })
         else:
@@ -356,7 +355,7 @@ def call_xai_api(model, messages, sys_prompt, stream=True, image_path=None, enab
     except Exception as e:
         st.error(f"API Error: {e}. Retrying in 5s...")
         time.sleep(5)
-        return call_xai_api(model, messages, sys_prompt, stream, image_path, enable_tools)  # Retry
+        return call_xai_api(model, messages, sys_prompt, stream, image_file, enable_tools)  # Retry
 
 # Login Page
 def login_page():
@@ -475,7 +474,7 @@ def chat_page():
         
         with st.chat_message("assistant"):
             response_container = st.empty()
-            generator = call_xai_api(model, st.session_state['messages'], custom_prompt, stream=True, image_path=uploaded_image.name if uploaded_image else None, enable_tools=enable_tools)
+            generator = call_xai_api(model, st.session_state['messages'], custom_prompt, stream=True, image_file=uploaded_image if uploaded_image else None, enable_tools=enable_tools)
             full_response = ""
             for chunk in generator:
                 full_response += chunk
@@ -518,4 +517,3 @@ if __name__ == "__main__":
         login_page()
     else:
         chat_page()
-```
